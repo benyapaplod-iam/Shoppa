@@ -1,0 +1,6 @@
+@ShoppaServer_HostAddress = http://localhost:5111
+
+GET {{ShoppaServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
