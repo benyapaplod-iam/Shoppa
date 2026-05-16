@@ -40,17 +40,18 @@
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Location = new Point(0, 0);
             headerPanel.Name = "headerPanel";
-            headerPanel.Size = new Size(800, 69);
+            headerPanel.Size = new Size(800, 78);
             headerPanel.TabIndex = 0;
             // 
             // label1
             // 
             label1.AutoSize = true;
+            label1.Cursor = Cursors.Hand;
             label1.Font = new Font("Cambria", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(12, 9);
+            label1.Location = new Point(12, 10);
             label1.Name = "label1";
-            label1.Size = new Size(268, 41);
+            label1.Size = new Size(284, 43);
             label1.TabIndex = 0;
             label1.Text = "SHOPPA | Seller";
             label1.Click += label1_Click;
@@ -60,18 +61,18 @@
             flowOrders.AutoScroll = true;
             flowOrders.BackColor = Color.White;
             flowOrders.Dock = DockStyle.Fill;
-            flowOrders.Location = new Point(0, 69);
+            flowOrders.Location = new Point(0, 78);
             flowOrders.Name = "flowOrders";
-            flowOrders.Padding = new Padding(20);
-            flowOrders.Size = new Size(800, 381);
+            flowOrders.Padding = new Padding(20, 23, 20, 23);
+            flowOrders.Size = new Size(800, 432);
             flowOrders.TabIndex = 1;
             // 
             // SellerForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Gainsboro;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 510);
             Controls.Add(flowOrders);
             Controls.Add(headerPanel);
             Name = "SellerForm";

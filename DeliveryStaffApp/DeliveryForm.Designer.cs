@@ -41,10 +41,10 @@
             // 
             flowPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flowPanel.AutoScroll = true;
-            flowPanel.Location = new Point(0, 75);
+            flowPanel.Location = new Point(0, 85);
             flowPanel.Name = "flowPanel";
-            flowPanel.Padding = new Padding(20);
-            flowPanel.Size = new Size(834, 375);
+            flowPanel.Padding = new Padding(20, 23, 20, 23);
+            flowPanel.Size = new Size(834, 425);
             flowPanel.TabIndex = 0;
             // 
             // notifyIcon1
@@ -60,29 +60,30 @@
             panel1.Controls.Add(lbShoppa);
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(834, 69);
+            panel1.Size = new Size(834, 78);
             panel1.TabIndex = 1;
             // 
             // lbShoppa
             // 
             lbShoppa.AutoSize = true;
+            lbShoppa.Cursor = Cursors.Hand;
             lbShoppa.Font = new Font("Cambria", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lbShoppa.Location = new Point(12, 9);
+            lbShoppa.Location = new Point(12, 10);
             lbShoppa.Name = "lbShoppa";
-            lbShoppa.Size = new Size(374, 41);
+            lbShoppa.Size = new Size(394, 43);
             lbShoppa.TabIndex = 0;
             lbShoppa.Text = "Shoppa | DeliveryStaff";
             lbShoppa.Click += lbShoppa_Click;
             // 
             // DeliveryForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Tomato;
-            ClientSize = new Size(834, 450);
+            ClientSize = new Size(834, 510);
             Controls.Add(panel1);
             Controls.Add(flowPanel);
-            MinimumSize = new Size(850, 400);
+            MinimumSize = new Size(850, 448);
             Name = "DeliveryForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
