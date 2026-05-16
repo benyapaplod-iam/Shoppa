@@ -86,7 +86,7 @@
             MinimumSize = new Size(850, 448);
             Name = "DeliveryForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "Delivery Form";
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);
