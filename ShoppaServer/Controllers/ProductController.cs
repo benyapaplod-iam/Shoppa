@@ -15,17 +15,5 @@ public class ProductController : ControllerBase
         var domain = new DomainLogic(MyConfig.ConnStr);
 
         return domain.GetAllProducts();
-    }
-
-    // SEARCH PRODUCT
-    [HttpGet("search")]
-    public List<Product> SearchProducts(
-        [FromQuery] string keyword)
-    {
-        var domain = new DomainLogic(MyConfig.ConnStr);
-
-        return domain.SearchProducts(keyword);
-    }
-
-    
+    } 
 }
