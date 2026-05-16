@@ -12,7 +12,7 @@ namespace SellerApp
     public partial class SellerForm : Form
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private const string ApiUrl = "https://localhost:7186/api/v1/Order";
+        private const string ApiUrl = "https://localhost:7186/api/v1/Order/seller-orders";
 
         public SellerForm()
         {
@@ -32,20 +32,14 @@ namespace SellerApp
                 var orders = await _httpClient.GetFromJsonAsync<List<Order>>(ApiUrl);
                 if (orders != null)
                 {
-                    // กรองเงื่อนไข: จ่ายแล้ว (Paid), ยังไม่ส่ง (Not Shipping), สถานะยืนยันแล้ว (Confirm)
-                    var filteredOrders = orders.Where(o =>
-                        o.PaymentStatus == "Paid" &&
-                        o.ShippingStatus == "Not Shipping" &&
-                        o.OrderStatus == "Confirmed"
-                    ).ToList();
 
-                    foreach (var order in filteredOrders)
+                    foreach (var order in orders)
                     {
                         string bodyText = string.Join(Environment.NewLine,
                             order.Orderitems.Select(oi => $"{oi.Product?.ProductName} x{oi.Quantity}"));
 
                         SellerControl card = new SellerControl();
-                        // ส่ง Method LoadOrders ไปเป็น Callback เพื่อให้ลูกสั่ง Refresh พ่อได้
+                        // ส่ง Method LoadOrders ไปเป็น Callback เพื่อให้สั่ง Refresh 
                         card.SetData(order.OrderId, bodyText, async () => await LoadOrders());
 
                         flowOrders.Controls.Add(card);
