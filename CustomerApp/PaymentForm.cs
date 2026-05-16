@@ -68,7 +68,7 @@ namespace CustomerApp
             }
         }
 
-        // --- ส่วนของ QR Code และ Toast ---
+        // --- ส่วนของ QR Code ---
         private void GenerateQR(string text)
         {
             using QRCodeGenerator generator = new QRCodeGenerator();
@@ -77,24 +77,5 @@ namespace CustomerApp
             Bitmap img = qr.GetGraphic(10);
             pictureQR.Image = img;
         }
-
-        //private void ExecuteToastAction(string action)
-        //{
-        //    if (string.IsNullOrEmpty(action)) return;
-        //    Form nextForm = null;
-        //    switch (action)
-        //    {
-        //        case "NOT_FOUND": nextForm = new CartForm(); break;
-        //        case "PAID": nextForm = new StatusForm(); break;
-        //        case "UNPAID": nextForm = new PaymentForm(orderId); break;
-        //    }
-        //    if (nextForm != null)
-        //    {
-        //        // 🌟 ปรับปรุงตรงนี้เช่นกัน
-        //        nextForm.WindowState = this.WindowState;
-        //        nextForm.Show();
-        //        this.Close();
-        //    }
-        //}
     }
 }
