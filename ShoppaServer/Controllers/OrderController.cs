@@ -212,8 +212,7 @@ public class OrderController : ControllerBase
                 .AsNoTracking()
                 .Include(o => o.Orderitems)
                     .ThenInclude(oi => oi.Product)
-                .Where(o => o.OrderStatus == "Shipping"
-                        && o.ShippingStatus == "Pending")
+                .Where(o => o.OrderStatus == "Shipping" || o.OrderStatus == "Delivery")
                 .OrderBy(o => o.OrderId)
                 .ToList();
 
