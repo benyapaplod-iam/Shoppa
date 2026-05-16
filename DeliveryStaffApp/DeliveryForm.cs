@@ -47,7 +47,7 @@ namespace DeliveryStaffApp
 
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:7186/api/v1/order";
+                    string apiUrl = "https://localhost:7186/api/v1/order/delivery-orders";
 
                     var response = await client.GetAsync(apiUrl);
 

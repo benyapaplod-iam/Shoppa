@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shoppa.Logic;
+using Microsoft.EntityFrameworkCore;
 using Shoppa.Data.Models;
+using Shoppa.Logic;
 
 
 namespace Shoppa.Api.Controllers;
@@ -182,9 +183,38 @@ public class OrderController : ControllerBase
 
             // กรองเฉพาะออเดอร์ที่เข้าเงื่อนไขของคุณเป๊ะๆ
             var orders = db.Orders
-                .Where(o => o.PaymentStatus == "Paid"
-                         && o.ShippingStatus == "Not Shipping"
-                         && o.OrderStatus == "Confirmed")
+            .AsNoTracking()
+            .Include(o => o.Orderitems)              
+                .ThenInclude(oi => oi.Product)       
+            .Where(o => o.PaymentStatus == "Paid"
+                     && o.ShippingStatus == "Not Shipping"
+                     && o.OrderStatus == "Confirmed")
+            .ToList();
+
+            return Ok(orders);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // GET: api/v1/order/delivery-orders
+    [HttpGet("delivery-orders")]
+    public ActionResult<List<Order>> GetDeliveryOrders()
+    {
+        try
+        {
+            using var db = new EcommerceDbContext();
+
+
+            var orders = db.Orders
+                .AsNoTracking()
+                .Include(o => o.Orderitems)
+                    .ThenInclude(oi => oi.Product)
+                .Where(o => o.OrderStatus == "Shipping"
+                        && o.ShippingStatus == "Pending")
+                .OrderBy(o => o.OrderId)
                 .ToList();
 
             return Ok(orders);
