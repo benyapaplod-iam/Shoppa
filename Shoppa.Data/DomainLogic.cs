@@ -246,8 +246,8 @@ public class DomainLogic
             );
         }
 
-        order.OrderStatus = "Delivered";
-        order.ShippingStatus = "Delivered";
+        order.OrderStatus = "Delivery";
+        order.ShippingStatus = "Delivery";
 
         context.SaveChanges();
     }
@@ -260,7 +260,7 @@ public class DomainLogic
         var order = context.Orders
             .Single(o => o.OrderId == orderId);
 
-        if (order.OrderStatus != "Delivered")
+        if (order.OrderStatus != "Delivery")
         {
             throw new Exception(
                 "Cannot complete order."
