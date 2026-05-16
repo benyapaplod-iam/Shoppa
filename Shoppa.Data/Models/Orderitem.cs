@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Shoppa.Data.Models;
@@ -26,8 +27,11 @@ public partial class Orderitem
     [Precision(10, 2)]
     public decimal Price { get; set; }
 
+    public decimal TotalItemPrice => Quantity * Price;
+
     [ForeignKey("OrderId")]
     [InverseProperty("Orderitems")]
+    [JsonIgnore]
     public virtual Order Order { get; set; } = null!;
 
     [ForeignKey("ProductId")]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Shoppa.Data.Models;
@@ -31,5 +32,6 @@ public partial class Product
     public string? ImageUrl { get; set; }
 
     [InverseProperty("Product")]
+    [JsonIgnore]
     public virtual ICollection<Orderitem> Orderitems { get; set; } = new List<Orderitem>();
 }
