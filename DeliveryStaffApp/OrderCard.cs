@@ -37,16 +37,9 @@ namespace DeliveryStaffApp
             {
                 lbBodyText.Text = "No items";
             }
-
-            if (order.OrderStatus == "Shipping")
-            {
-                cmbStatus.SelectedItem = "Pending";
-            }
-            else
-            {
-                // ถ้าไม่ใช่ shipping ให้ดึงค่าจาก ShippingStatus ตามปกติ
-                cmbStatus.SelectedItem = order.ShippingStatus;
-            }
+            
+            cmbStatus.SelectedItem = order.ShippingStatus;
+            
         }
 
         public void UpdateStatus(string status)
