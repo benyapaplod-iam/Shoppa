@@ -80,7 +80,7 @@ namespace CustomerApp
                 cardsToAdd.Add(card);
             }
 
-            // 3. โยนการ์ดทั้งหมดลงกล่องในคำสั่งเดียว! (เร็วกว่าเยอะมาก)
+            // 3. โยนการ์ดทั้งหมดลงกล่องในคำสั่งเดียว! 
             flowLayoutPanel1.Controls.AddRange(cardsToAdd.ToArray());
 
             CenterProducts();
@@ -157,7 +157,7 @@ namespace CustomerApp
             }
         }    
 
-        private void flowLayoutPanel1_Paint(object? sender, PaintEventArgs e) { }
+       
 
         private void pictureBox1_Click(object? sender, EventArgs e)
         {

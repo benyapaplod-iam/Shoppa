@@ -54,7 +54,7 @@
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(713, 317);
             flowLayoutPanel1.TabIndex = 3;
-            flowLayoutPanel1.Paint += flowLayoutPanel1_Paint;
+          
             // 
             // pictureBox1
             // 
