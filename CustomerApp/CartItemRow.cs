@@ -50,10 +50,10 @@ namespace CustomerApp
         public string Quantity { get { return lblQuantity.Text; } set { lblQuantity.Text = value; } }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Price { get { return lblPrice.Text; } set { lblPrice.Text = value; } }
-        // เพิ่ม Property นี้เพื่อเก็บ ID สินค้าจาก Database
+        
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int ProductId { get; set; }
-        // เพิ่ม Property นี้ในไฟล์ CartItemRow.cs
+        
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsSelected
         {
@@ -90,7 +90,7 @@ namespace CustomerApp
             var item = CartManager.Items.FirstOrDefault(i => i.Title == this.Title);
             if (item != null)
             {
-                item.Quantity--; // ลดในระบบ
+                item.Quantity--; 
 
                 if (item.Quantity <= 0)
                 {
@@ -115,16 +115,15 @@ namespace CustomerApp
             }
             _parentForm?.CalculateTotal();
         }
-        // อย่าลืมผูก Event ให้ CheckBox ใน Constructor ของ CartItemRow ด้วยครับ
+        
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             _parentForm?.CalculateTotal();
         }
 
-        // ฟังก์ชันช่วยสำหรับการลบข้อมูลทั้งในระบบและหน้าจอ
         private void RemoveThisItem(CartItemModel item)
         {
-            CartManager.Items.Remove(item); // ลบออกจาก List ใน CartManager
+            CartManager.Items.Remove(item); // ลบ List ใน CartManager
             this.Dispose(); // ลบแถว UserControl นี้ออกจากหน้าจอ
         }
     }

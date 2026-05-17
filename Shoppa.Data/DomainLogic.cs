@@ -71,7 +71,7 @@ public class DomainLogic
         return order.OrderId;
     }
 
-    // อัปเดตสถานะการชำระเงิน (ย้ายมาจาก Controller เพื่อรองรับ WinForms)
+    // อัปเดตสถานะการชำระเงิน 
     public void UpdatePaymentStatus(int orderId, string paymentStatus, string orderStatus)
     {
         using var context = new EcommerceDbContext(connectionString);
@@ -86,7 +86,7 @@ public class DomainLogic
         context.SaveChanges();
     }
 
-    // ดูรายการ order ของ customer
+    // ดูรายการ order ของ customer ก็คือ Status
     public List<Order> GetAllOrders()
     {
         using var context = new EcommerceDbContext(connectionString);

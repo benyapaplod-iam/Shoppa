@@ -8,7 +8,7 @@ namespace CustomerApp
     {
         public static List<CartItemModel> Items { get; private set; } = new List<CartItemModel>();
 
-        // 👇 แก้ฟังก์ชันตรงนี้ให้รับ Object ของ CartItemModel เข้ามาแทน 👇
+        // รับ Object ของ CartItemModel
         public static void AddToCart(CartItemModel newItem)
         {
             // เช็กว่ามีสินค้านี้ในตะกร้าหรือยังจากชื่อสินค้า
@@ -21,7 +21,7 @@ namespace CustomerApp
             }
             else
             {
-                // ถ้ายังไม่มี ให้เพิ่มรายการใหม่ลงไปตรงๆ ทั้งก้อน
+                // ถ้ายังไม่มี ให้เพิ่มรายการใหม่
                 Items.Add(newItem);
             }
         }
