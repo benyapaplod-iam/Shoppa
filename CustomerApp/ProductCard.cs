@@ -12,7 +12,7 @@ namespace CustomerApp
 {
     public partial class ProductCard : UserControl
     {
-        // 1. ประกาศตัวแปรไว้ตรงนี้ (ใต้ Class แต่อยู่เหนือ Method อื่น)
+        // 1. ประกาศตัวแปร
         private int _currentQuantity = 0;
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -27,12 +27,12 @@ namespace CustomerApp
             // ตั้งค่าเริ่มต้นให้ Label โชว์เลข 0 ทันทีตอนโหลดหน้าจอ
             lblQuantity.Text = _currentQuantity.ToString();
 
-            // 1. สั่งล้าง Event เดิมทิ้งไปก่อน (เผื่อหน้า Design แอบผูกเอาไว้ จะได้ไม่เบิ้ล)
+            // 1. สั่งล้าง Event เดิมทิ้งไปก่อน (จะได้ไม่เบิ้ล)
             btnMinus.Click -= btnMinus_Click;
             btnPlus.Click -= btnPlus_Click;
             btnAdd.Click -= btnAdd_Click;
 
-            // 2. สั่งผูก Event เข้าไปใหม่ (รับประกันว่าปุ่มจะทำงานแค่ 1 รอบเป๊ะๆ และกดได้ทุกปุ่มแน่นอน)
+            // 2. สั่งผูก Event เข้าไปใหม่ (รับประกันว่าปุ่มจะทำงานแค่ 1)
             btnMinus.Click += btnMinus_Click;
             btnPlus.Click += btnPlus_Click;
             btnAdd.Click += btnAdd_Click;
@@ -55,16 +55,7 @@ namespace CustomerApp
                 _currentQuantity--; // ลบ 1
                 lblQuantity.Text = _currentQuantity.ToString(); // อัปเดตหน้าจอ
             }
-        }
-
-        private void ProductCard_Load(object sender, EventArgs e)
-        {
-            // ปล่อยว่างไว้ได้เลยครับ
-        }
-
-        private void lblTitle_Click(object sender, EventArgs e)
-        {
-        }
+        }    
 
         // ==========================================
         // ส่วนที่ 2: ช่องทางรับส่งข้อมูล (Properties)
@@ -155,7 +146,7 @@ namespace CustomerApp
 
     // ==========================================
     // ตัวสร้างการแจ้งเตือนมุมขวาล่าง (Toast Notification)
-    // ต้องวางไว้นอก Class ProductCard แต่อยู่ใน Namespace เดียวกันครับ
+    // ต้องวางไว้นอก Class ProductCard แต่อยู่ใน Namespace เดียวกัน
     // ==========================================
     public static class Toast
     {

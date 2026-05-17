@@ -108,7 +108,7 @@
             lblTitle.Size = new Size(120, 20);
             lblTitle.TabIndex = 7;
             lblTitle.Text = "Product Name";
-            lblTitle.Click += lblTitle_Click;
+       
             // 
             // lblDescription
             // 
@@ -134,8 +134,7 @@
             Controls.Add(lblPrice);
             Controls.Add(pictureBox1);
             Name = "ProductCard";
-            Size = new Size(220, 293);
-            Load += ProductCard_Load;
+            Size = new Size(220, 293);        
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
