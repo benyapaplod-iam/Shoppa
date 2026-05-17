@@ -38,7 +38,7 @@ namespace CustomerApp
                 // เช็กว่าของข้างในคือการ์ด OrderItemControl ใช่ไหม
                 if (control is OrderItemControl item)
                 {
-                    // สั่งการ์ดลูกให้กว้างเท่ากล่องแม่ (หักระยะขอบออกประมาณ 25px ให้ดูสวย)
+                    // สั่งการ์ดลูกให้กว้างเท่ากล่องแม่ (หักระยะขอบออกประมาณ 25px)
                     item.Width = flowLayoutPanel1.ClientSize.Width - 25;
                 }
             }
@@ -90,15 +90,13 @@ namespace CustomerApp
                 flowLayoutPanel1.Controls.Add(itemUI);
             }
 
-            // --- สร้าง Footer (ป้ายแคปซูลพอดีตัวหนังสือ) ---
-
-            // สร้าง Label ก่อนเพื่อหาความกว้างที่เหมาะสม
+            // สร้าง Label 
             Label lblTotalText = new Label
             {
                 Text = $"รายการทั้งหมด: {_order.Orderitems.Count} รายการ  |  ยอดรวมสุทธิ: {_order.TotalPrice:N2} บาท",
                 Font = new Font("Leelawadee UI", 11, FontStyle.Bold),
                 ForeColor = Color.Tomato,
-                AutoSize = true // ให้คำนวณความกว้างเอง
+                AutoSize = true 
             };
 
             // สร้างกรอบแคปซูล ให้กว้างตาม Label + ระยะขอบ
@@ -106,11 +104,11 @@ namespace CustomerApp
             {
                 BackColor = Color.White,
                 Width = lblTotalText.PreferredWidth + 50,
-                Height = 45, // ปรับความสูงให้ดูเป็นป้ายสวยๆ
+                Height = 45, 
                 Margin = new Padding(0, 10, 0, 15)
             };
 
-            // จัดตำแหน่งตัวหนังสือให้อยู่ตรงกลางกรอบพอดี
+            // จัดตำแหน่งตัวหนังสือให้อยู่ตรงกลาง
             lblTotalText.Location = new Point(25, (footerContainer.Height - lblTotalText.PreferredHeight) / 2);
             footerContainer.Controls.Add(lblTotalText);
 
@@ -128,7 +126,7 @@ namespace CustomerApp
 
             flowLayoutPanel1.Controls.Add(footerContainer);
 
-            AdjustHeight(); // อย่าลืมเรียก AdjustHeight ให้มันปรับความสูงของ Card ทั้งหมด
+            AdjustHeight(); 
             flowLayoutPanel1.ResumeLayout();
         }
 

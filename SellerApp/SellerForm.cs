@@ -17,11 +17,7 @@ namespace SellerApp
         public SellerForm()
         {
             InitializeComponent();
-            // เรียกโหลดข้อมูลตอนเปิดหน้า
-
-            // เวลา resize form ให้จัดกลางใหม่
             flowOrders.Resize += (s, e) => CenterCards();
-
             this.Shown += async (s, e) => await LoadOrders();
         }
         private async Task LoadOrders()

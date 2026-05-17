@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shoppa.Data.Models;
 using Shoppa.Logic;
 
-
 namespace Shoppa.Api.Controllers;
+
 [Route("api/v1/[controller]")]
 [ApiController]
 public class OrderController : ControllerBase
@@ -38,7 +37,7 @@ public class OrderController : ControllerBase
 
             return Ok(order);
         }
-        catch (InvalidOperationException) 
+        catch (InvalidOperationException)
         {
             return NotFound(new { message = $"Order {id} not found." });
         }
@@ -63,12 +62,8 @@ public class OrderController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-    public class UpdateShippingStatusRequest
-    {
-        public required string ShippingStatus { get; set; }
-    }
 
-    // UPDATE ORDER STATUS ของ dalivery (ShippingStatus + OrderStatus)
+    // UPDATE ORDER STATUS ของ delivery (ShippingStatus + OrderStatus)
     [HttpPut("{id}/status")]
     public ActionResult UpdateStatus(int id, [FromBody] UpdateShippingStatusRequest req)
     {
@@ -77,43 +72,23 @@ public class OrderController : ControllerBase
             if (req == null || string.IsNullOrWhiteSpace(req.ShippingStatus))
                 return BadRequest(new { message = "ShippingStatus is required" });
 
-            using var db = new EcommerceDbContext();
-
-            var order = db.Orders.FirstOrDefault(o => o.OrderId == id);
-
-            if (order == null)
-                return NotFound();
-
-            var shippingStatus = req.ShippingStatus.Trim().ToLower();
-
-            order.ShippingStatus = req.ShippingStatus;
-
-            switch (shippingStatus)
-            {
-                case "pending":
-                    order.OrderStatus = "Shipping";
-                    break;
-
-                case "shipping":
-                    order.OrderStatus = "Delivery";
-                    break;
-
-                case "completed":
-                    order.OrderStatus = "Completed";
-                    break;
-
-                default:
-                    return BadRequest(new { message = "Invalid ShippingStatus" });
-            }
-
-            db.SaveChanges();
+            var domain = new DomainLogic(MyConfig.ConnStr);
+            var updatedOrder = domain.UpdateDeliveryAndOrderStatus(id, req.ShippingStatus);
 
             return Ok(new
             {
                 message = "Updated successfully",
-                shipping = order.ShippingStatus,
-                order = order.OrderStatus
+                shipping = updatedOrder.ShippingStatus,
+                order = updatedOrder.OrderStatus
             });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -121,22 +96,20 @@ public class OrderController : ControllerBase
         }
     }
 
-    // อัปเดตสถานะการชำระเงินจาก WinForms เมื่อผู้ใช้กดปุ่ม "ชำระเงินสำเร็จ" (PaymentStatus = "Paid", OrderStatus = "Confirmed")
+    // อัปเดตสถานะการชำระเงินจาก WinForms เมื่อผู้ใช้กดปุ่ม "ชำระเงินสำเร็จ"
     [HttpPost("update-status")]
     public ActionResult UpdatePaymentStatus([FromBody] PaymentUpdateRequest req)
     {
         try
         {
-            using var db = new EcommerceDbContext(); 
-            var order = db.Orders.FirstOrDefault(o => o.OrderId == req.OrderId);
+            var domain = new DomainLogic(MyConfig.ConnStr);
+            domain.UpdatePaymentStatus(req.OrderId, req.PaymentStatus, req.OrderStatus);
 
-            if (order == null) return NotFound(new { message = "Order not found" });
-
-            order.PaymentStatus = req.PaymentStatus; 
-            order.OrderStatus = req.OrderStatus;     
-
-            db.SaveChanges();
             return Ok(new { message = "Payment updated successfully" });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Order not found" });
         }
         catch (Exception ex)
         {
@@ -144,22 +117,14 @@ public class OrderController : ControllerBase
         }
     }
 
-    // อัปเดตสถานะการจัดส่งเป็น "Shipping" และ ShippingStatus เป็น "Pending" เมื่อ Seller กดปุ่ม "ยืนยันออเดอร์"
+    // อัปเดตสถานะการจัดส่งเมื่อ Seller กดปุ่ม "ยืนยันออเดอร์"
     [HttpPut("{id}/confirm-shipping")]
     public ActionResult ConfirmShipping(int id)
     {
         try
         {
-            using var db = new EcommerceDbContext();
-            var order = db.Orders.FirstOrDefault(o => o.OrderId == id);
-
-            if (order == null) return NotFound(new { message = "ไม่พบคำสั่งซื้อ" });
-
-  
-            order.OrderStatus = "Shipping";      
-            order.ShippingStatus = "Pending";    
-
-            db.SaveChanges();
+            var domain = new DomainLogic(MyConfig.ConnStr);
+            var order = domain.ConfirmShippingBySeller(id);
 
             return Ok(new
             {
@@ -169,28 +134,24 @@ public class OrderController : ControllerBase
                 shippingStatus = order.ShippingStatus
             });
         }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
         }
     }
+
     // ดึงข้อมูลสำหรับหน้า Seller 
     [HttpGet("seller-orders")]
     public ActionResult GetSellerOrders()
     {
         try
         {
-            using var db = new EcommerceDbContext();
-
-            var orders = db.Orders
-            .AsNoTracking()
-            .Include(o => o.Orderitems)              
-                .ThenInclude(oi => oi.Product)       
-            .Where(o => o.PaymentStatus == "Paid"
-                     && o.ShippingStatus == "Not Shipping"
-                     && o.OrderStatus == "Confirmed")
-            .ToList();
-
+            var domain = new DomainLogic(MyConfig.ConnStr);
+            var orders = domain.GetSellerOrders();
             return Ok(orders);
         }
         catch (Exception ex)
@@ -205,23 +166,20 @@ public class OrderController : ControllerBase
     {
         try
         {
-            using var db = new EcommerceDbContext();
-
-
-            var orders = db.Orders
-                .AsNoTracking()
-                .Include(o => o.Orderitems)
-                    .ThenInclude(oi => oi.Product)
-                .Where(o => o.OrderStatus == "Shipping" || o.OrderStatus == "Delivery")
-                .OrderBy(o => o.OrderId)
-                .ToList();
-
+            var domain = new DomainLogic(MyConfig.ConnStr);
+            var orders = domain.GetDeliveryOrders();
             return Ok(orders);
         }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    // DTO คลาสที่ใช้รับ Request
+    public class UpdateShippingStatusRequest
+    {
+        public required string ShippingStatus { get; set; }
     }
 
     public class PaymentUpdateRequest
