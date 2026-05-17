@@ -3,15 +3,6 @@ using Shoppa.Data.Models;
 
 namespace Shoppa.Logic;
 
-public enum OrderStatus
-{
-    Pending,
-    Confirmed,
-    Shipping,
-    Delivered,
-    Completed
-}
-
 public class CartItemFlat
 {
     public int ProductId { get; set; }
@@ -20,37 +11,25 @@ public class CartItemFlat
 
 public class DomainLogic
 {
-    string connectionString;
+    private readonly string connectionString;
 
     public DomainLogic(string connectionString)
     {
         this.connectionString = connectionString;
     }
 
-    // CUSTOMER
+    // CUSTOMER METHODS
     // ดูสินค้าทั้งหมด
     public List<Product> GetAllProducts()
     {
         using var context = new EcommerceDbContext(connectionString);
-
         return context.Products
             .OrderBy(p => p.ProductId)
             .ToList();
     }
 
-    // ค้นหาสินค้า
-    public List<Product> SearchProducts(string keyword)
-    {
-        using var context = new EcommerceDbContext(connectionString);
-
-        return context.Products
-            .Where(p => p.ProductName.Contains(keyword))
-            .OrderBy(p => p.ProductName)
-            .ToList();
-    }
-
     // Checkout / Create Order
-    public int Checkout(List<CartItemFlat> items) 
+    public int Checkout(List<CartItemFlat> items)
     {
         using var context = new EcommerceDbContext(connectionString);
         using var transaction = context.Database.BeginTransaction();
@@ -86,28 +65,23 @@ public class DomainLogic
 
         order.TotalPrice = total;
         context.Orders.Add(order);
-        context.SaveChanges(); 
+        context.SaveChanges();
 
         transaction.Commit();
-
-        return order.OrderId; 
+        return order.OrderId;
     }
 
-    // ชำระเงิน
-    public void Payment(int orderId)
+    // อัปเดตสถานะการชำระเงิน (ย้ายมาจาก Controller เพื่อรองรับ WinForms)
+    public void UpdatePaymentStatus(int orderId, string paymentStatus, string orderStatus)
     {
         using var context = new EcommerceDbContext(connectionString);
+        var order = context.Orders.FirstOrDefault(o => o.OrderId == orderId);
 
-        var order = context.Orders
-            .Single(o => o.OrderId == orderId);
+        if (order == null)
+            throw new KeyNotFoundException("Order not found");
 
-        if (order.PaymentStatus != "Unpaid")
-        {
-            throw new Exception("Order already paid.");
-        }
-
-        order.PaymentStatus = "Paid";
-        order.OrderStatus = "Confirmed";
+        order.PaymentStatus = paymentStatus;
+        order.OrderStatus = orderStatus;
 
         context.SaveChanges();
     }
@@ -116,7 +90,6 @@ public class DomainLogic
     public List<Order> GetAllOrders()
     {
         using var context = new EcommerceDbContext(connectionString);
-
         return context.Orders
             .Include(o => o.Orderitems)
             .ThenInclude(i => i.Product)
@@ -128,7 +101,6 @@ public class DomainLogic
     public Order GetOrder(int orderId)
     {
         using var context = new EcommerceDbContext(connectionString);
-
         return context.Orders
             .Where(o => o.OrderId == orderId)
             .Include(o => o.Orderitems)
@@ -136,131 +108,80 @@ public class DomainLogic
             .Single();
     }
 
-    // SELLER
-    // Seller จัดส่งสินค้า
-    public void ShipOrder(int orderId)
+
+    // SELLER METHODS
+    // ดึงข้อมูลสำหรับหน้า Seller
+    public List<Order> GetSellerOrders()
     {
         using var context = new EcommerceDbContext(connectionString);
-
-        var order = context.Orders
-            .Single(o => o.OrderId == orderId);
-
-        if (order.OrderStatus != "Confirmed")
-        {
-            throw new Exception("Cannot ship order.");
-        }
-
-        order.OrderStatus = "Shipping";
-        order.ShippingStatus = "Shipping";
-
-        context.SaveChanges();
-    }
-
-    // Seller จัดการสินค้า (เพิ่ม/แก้ไข/ลบ) 
-    public void AddProduct(Product product)
-    {
-        using var context = new EcommerceDbContext(connectionString);
-
-        context.Products.Add(product);
-
-        context.SaveChanges();
-    }
-
-    public void UpdateProduct(Product product)
-    {
-        using var context = new EcommerceDbContext(connectionString);
-
-        context.Products.Update(product);
-
-        context.SaveChanges();
-    }
-
-    public void DeleteProduct(int productId)
-    {
-        using var context = new EcommerceDbContext(connectionString);
-
-        var product = context.Products
-            .Single(p => p.ProductId == productId);
-
-        context.Products.Remove(product);
-
-        context.SaveChanges();
-    }
-
-    // DELIVERY STAFF
-    // ดูรายการจัดส่ง
-    public List<Order> GetShippingOrders()
-    {
-        using var context = new EcommerceDbContext(connectionString);
-
         return context.Orders
-            .Where(o => o.OrderStatus == "Shipping")
+            .AsNoTracking()
             .Include(o => o.Orderitems)
-            .ThenInclude(i => i.Product)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.PaymentStatus == "Paid"
+                     && o.ShippingStatus == "Not Shipping"
+                     && o.OrderStatus == "Confirmed")
             .ToList();
     }
 
-    // Update delivery status
-    public void UpdateDeliveryStatus(
-        int orderId,
-        string shippingStatus)
+    // Seller กดยืนยันออเดอร์เพื่อเตรียมส่ง
+    public Order ConfirmShippingBySeller(int orderId)
     {
         using var context = new EcommerceDbContext(connectionString);
+        var order = context.Orders.FirstOrDefault(o => o.OrderId == orderId);
 
-        var order = context.Orders
-            .Single(o => o.OrderId == orderId);
+        if (order == null)
+            throw new KeyNotFoundException("ไม่พบคำสั่งซื้อ");
 
-        if (order.OrderStatus != "Shipping")
-        {
-            throw new Exception(
-                "Cannot update delivery status."
-            );
-        }
-
-        order.ShippingStatus = shippingStatus;
+        order.OrderStatus = "Shipping";
+        order.ShippingStatus = "Pending";
 
         context.SaveChanges();
+        return order;
     }
 
-    // Confirm delivery
-    public void ConfirmDelivery(int orderId)
+    // DELIVERY STAFF METHODS
+    // ดูรายการจัดส่งสำหรับ Delivery Staff ทั้งหมด
+    public List<Order> GetDeliveryOrders()
     {
         using var context = new EcommerceDbContext(connectionString);
-
-        var order = context.Orders
-            .Single(o => o.OrderId == orderId);
-
-        if (order.OrderStatus != "Shipping")
-        {
-            throw new Exception(
-                "Cannot confirm delivery."
-            );
-        }
-
-        order.OrderStatus = "Delivery";
-        order.ShippingStatus = "Shipping";
-
-        context.SaveChanges();
+        return context.Orders
+            .AsNoTracking()
+            .Include(o => o.Orderitems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.OrderStatus == "Shipping" || o.OrderStatus == "Delivery")
+            .OrderBy(o => o.OrderId)
+            .ToList();
     }
 
-    // Complete order
-    public void CompleteOrder(int orderId)
+    // อัปเดตสถานะ
+    public Order UpdateDeliveryAndOrderStatus(int orderId, string rawShippingStatus)
     {
         using var context = new EcommerceDbContext(connectionString);
+        var order = context.Orders.FirstOrDefault(o => o.OrderId == orderId);
 
-        var order = context.Orders
-            .Single(o => o.OrderId == orderId);
+        if (order == null)
+            throw new KeyNotFoundException("Order not found");
 
-        if (order.OrderStatus != "Delivery")
+        var shippingStatus = rawShippingStatus.Trim().ToLower();
+        order.ShippingStatus = rawShippingStatus;
+
+        switch (shippingStatus)
         {
-            throw new Exception(
-                "Cannot complete order."
-            );
+            case "pending":
+                order.OrderStatus = "Shipping";
+                break;
+            case "shipping":
+                order.OrderStatus = "Delivery";
+                break;
+            case "completed":
+                order.OrderStatus = "Completed";
+                break;
+            default:
+                throw new ArgumentException("Invalid ShippingStatus");
         }
 
-        order.OrderStatus = "Completed";
-        order.ShippingStatus = "Completed";
-
         context.SaveChanges();
+        return order;
     }
 }

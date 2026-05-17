@@ -29,7 +29,7 @@ namespace CustomerApp
             {
                 try
                 {
-                    // ใช้ LoadAsync จะช่วยให้หน้าจอ Status เปิดได้ลื่นไหล ไม่ค้าง
+                    // ใช้ LoadAsync จะช่วยให้หน้าจอ Status เปิดได้ลื่น ไม่ค้าง
                     pictureBox1.LoadAsync(imageUrl);
                 }
                 catch
