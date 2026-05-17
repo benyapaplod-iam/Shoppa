@@ -38,7 +38,7 @@ public class OrderController : ControllerBase
 
             return Ok(order);
         }
-        catch (InvalidOperationException) // กรณี .Single() หาไม่เจอ
+        catch (InvalidOperationException) 
         {
             return NotFound(new { message = $"Order {id} not found." });
         }
@@ -68,7 +68,7 @@ public class OrderController : ControllerBase
         public required string ShippingStatus { get; set; }
     }
 
-    // UPDATE ORDER STATUS
+    // UPDATE ORDER STATUS ของ dalivery (ShippingStatus + OrderStatus)
     [HttpPut("{id}/status")]
     public ActionResult UpdateStatus(int id, [FromBody] UpdateShippingStatusRequest req)
     {
@@ -121,19 +121,19 @@ public class OrderController : ControllerBase
         }
     }
 
+    // อัปเดตสถานะการชำระเงินจาก WinForms เมื่อผู้ใช้กดปุ่ม "ชำระเงินสำเร็จ" (PaymentStatus = "Paid", OrderStatus = "Confirmed")
     [HttpPost("update-status")]
     public ActionResult UpdatePaymentStatus([FromBody] PaymentUpdateRequest req)
     {
         try
         {
-            using var db = new EcommerceDbContext(); // หรือใช้ DomainLogic ตามความเหมาะสม
+            using var db = new EcommerceDbContext(); 
             var order = db.Orders.FirstOrDefault(o => o.OrderId == req.OrderId);
 
             if (order == null) return NotFound(new { message = "Order not found" });
 
-            // อัปเดตสถานะตามที่ WinForms ส่งมา
-            order.PaymentStatus = req.PaymentStatus; // "Paid"
-            order.OrderStatus = req.OrderStatus;     // "Confirmed"
+            order.PaymentStatus = req.PaymentStatus; 
+            order.OrderStatus = req.OrderStatus;     
 
             db.SaveChanges();
             return Ok(new { message = "Payment updated successfully" });
@@ -144,6 +144,7 @@ public class OrderController : ControllerBase
         }
     }
 
+    // อัปเดตสถานะการจัดส่งเป็น "Shipping" และ ShippingStatus เป็น "Pending" เมื่อ Seller กดปุ่ม "ยืนยันออเดอร์"
     [HttpPut("{id}/confirm-shipping")]
     public ActionResult ConfirmShipping(int id)
     {
@@ -154,9 +155,9 @@ public class OrderController : ControllerBase
 
             if (order == null) return NotFound(new { message = "ไม่พบคำสั่งซื้อ" });
 
-            // ตั้งค่าตามเงื่อนไขที่คุณต้องการเป๊ะๆ
-            order.OrderStatus = "Shipping";      // สถานะหลัก: กำลังจัดส่ง
-            order.ShippingStatus = "Pending";    // สถานะขนส่ง: รอคัดแยก/รอรถรับ
+  
+            order.OrderStatus = "Shipping";      
+            order.ShippingStatus = "Pending";    
 
             db.SaveChanges();
 
@@ -181,7 +182,6 @@ public class OrderController : ControllerBase
         {
             using var db = new EcommerceDbContext();
 
-            // กรองเฉพาะออเดอร์ที่เข้าเงื่อนไขของคุณเป๊ะๆ
             var orders = db.Orders
             .AsNoTracking()
             .Include(o => o.Orderitems)              

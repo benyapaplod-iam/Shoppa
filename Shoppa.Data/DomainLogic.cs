@@ -27,10 +27,7 @@ public class DomainLogic
         this.connectionString = connectionString;
     }
 
-    // =====================================================
     // CUSTOMER
-    // =====================================================
-
     // ดูสินค้าทั้งหมด
     public List<Product> GetAllProducts()
     {
@@ -53,7 +50,7 @@ public class DomainLogic
     }
 
     // Checkout / Create Order
-    public int Checkout(List<CartItemFlat> items) // เปลี่ยนจาก void เป็น int
+    public int Checkout(List<CartItemFlat> items) 
     {
         using var context = new EcommerceDbContext(connectionString);
         using var transaction = context.Database.BeginTransaction();
@@ -89,11 +86,11 @@ public class DomainLogic
 
         order.TotalPrice = total;
         context.Orders.Add(order);
-        context.SaveChanges(); // หลังเซฟตรงนี้ order.OrderId จะได้ค่ามาจาก Database ทันที
+        context.SaveChanges(); 
 
         transaction.Commit();
 
-        return order.OrderId; // <--- เพิ่มบรรทัดนี้ เพื่อส่งเลข Order กลับไป
+        return order.OrderId; 
     }
 
     // ชำระเงิน
@@ -139,10 +136,7 @@ public class DomainLogic
             .Single();
     }
 
-    // =====================================================
     // SELLER
-    // =====================================================
-
     // Seller จัดส่งสินค้า
     public void ShipOrder(int orderId)
     {
@@ -162,7 +156,7 @@ public class DomainLogic
         context.SaveChanges();
     }
 
-    // Seller จัดการสินค้า
+    // Seller จัดการสินค้า (เพิ่ม/แก้ไข/ลบ) 
     public void AddProduct(Product product)
     {
         using var context = new EcommerceDbContext(connectionString);
@@ -193,10 +187,7 @@ public class DomainLogic
         context.SaveChanges();
     }
 
-    // =====================================================
     // DELIVERY STAFF
-    // =====================================================
-
     // ดูรายการจัดส่ง
     public List<Order> GetShippingOrders()
     {
@@ -247,7 +238,7 @@ public class DomainLogic
         }
 
         order.OrderStatus = "Delivery";
-        order.ShippingStatus = "Delivery";
+        order.ShippingStatus = "Shipping";
 
         context.SaveChanges();
     }
