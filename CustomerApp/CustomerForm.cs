@@ -42,7 +42,7 @@ namespace CustomerApp
             // 2. ตั้งค่ากล่องสินค้า
             flowLayoutPanel1.AutoScroll = true;
 
-            // 3. เริ่มดึงข้อมูลจาก API (เรียกแค่ "ครั้งเดียว" พอครับ)
+            // 3. เริ่มดึงข้อมูลจาก API (เรียกแค่ "ครั้งเดียว")
             await LoadProductsFromApi();
         }
         // 3. ฟังก์ชันดักจับการพิมพ์

@@ -143,7 +143,7 @@ namespace CustomerApp
             path.AddArc(arc, 270, 180);
 
             path.CloseFigure();
-            return path;
+            return path;++
         }
 
         private void AdjustHeight()
